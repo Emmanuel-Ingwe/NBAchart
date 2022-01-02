@@ -85,32 +85,44 @@ const warriorsGames = [
     }
 ];
 
+const makeChart = (games, targetTeam) => {
+    const ulParent = document.createElement('ul');
+    for (let game of games) {
+        const gameLi = document.createElement('li');
+        gameLi.innerHTML = getScoreLine(game);
+        gameLi.classList.add(isWinner(game, targetTeam) ? 'win' : 'loss');
+        ulParent.appendChild(gameLi);
+    }
+    return ulParent;
+};
 
-const ulParent = document.createElement('ul');
-for (let game of warriorsGames) {
-    const {
-        homeTeam,
-        awayTeam
-    } = game;
-    const gameLi = document.createElement('li');
-    const {
-        team: hTeam,
-        points: hPoints
-    } = homeTeam;
-    const {
-        team: aTeam,
-        points: aPoints
-    } = awayTeam;
+const isWinner = ({ homeTeam, awayTeam }, targetTeam) => {
+    const target = homeTeam.team === targetTeam ? homeTeam : awayTeam;
+    return target.isWinner;
+};
+
+const getScoreLine = ({ homeTeam, awayTeam }) => {
+    const { team: hTeam, points: hPoints } = homeTeam;
+    const { team: aTeam, points: aPoints } = awayTeam;
     const teamNames = `${aTeam} @ ${hTeam}`;
     let scoreLine;
     if (aPoints > hPoints) {
         scoreLine = `<b>${aPoints}</b>-${hPoints}`;
-    } else {
+    }
+    else {
         scoreLine = `${aPoints}-<b>${hPoints}</b>`;
     }
-    gameLi.innerHTML = `${teamNames} @ ${scoreLine}`;
-    console.log(scoreLine);
-    ulParent.appendChild(gameLi);
-}
+    return `${teamNames} ${scoreLine}`;
+};
 
-document.body.prepend(ulParent);
+//Select the 2 sections to append to (from index.html)
+const gsSection = document.querySelector('#gs');
+const houstonSection = document.querySelector('#hr');
+
+// Make the 2 charts:
+const gsChart = makeChart(warriorsGames, 'Golden State');
+const hrChart = makeChart(warriorsGames, 'Houston');
+
+//Append them!
+gsSection.appendChild(gsChart);
+houstonSection.appendChild(hrChart);
